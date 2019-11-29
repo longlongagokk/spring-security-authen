@@ -92,14 +92,19 @@ public class AuthenticationConfiguration {
         if (StringUtils.isEmpty(bearer) || !bearer.startsWith(BEARER) || bearer.length() <= BEARER.length()){
             return getAnonymousToken();
         }
-        final int _split = bearer.indexOf('|');
-        if(_split == -1){
+        final String[] _split = bearer.substring(BEARER.length()).split("\\|");
+        if(_split.length != 3){
             return null;
         }
-        final String authToken = bearer.substring(BEARER.length(),_split);
-        final String username = bearer.substring(_split + 1);
+        final String authToken = _split[0];
+        final String username = _split[1];
+        final Long expires = Long.valueOf(_split[2]);
+        if(expires <= System.currentTimeMillis()){
+            log.warn("token 已过期");
+            return null;
+        }
         //验证token 的合法性（username+secretKey+expire）
-        if(!CommonUtil.isEqual(authToken, ServiceEncryUtil.getMemberToken(username,memberTokenSecret))){
+        if(!CommonUtil.isEqual(authToken, ServiceEncryUtil.getMemberToken(username,memberTokenSecret+expires))){
             //throw new CustomerException("请不要修改token", CommonEnumContainer.ResultStatus.Token无效);
             log.warn("请不要修改token");
             return null;
@@ -114,7 +119,7 @@ public class AuthenticationConfiguration {
             GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_" + role);
             grantedAuthorities.add(grantedAuthority);
         }
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userInfo.getUsername(),userInfo,grantedAuthorities);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userInfo.getUserName(),userInfo,grantedAuthorities);
         return authentication;
     }
 

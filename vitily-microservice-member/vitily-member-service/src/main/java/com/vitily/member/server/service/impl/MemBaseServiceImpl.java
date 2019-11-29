@@ -86,12 +86,12 @@ public class MemBaseServiceImpl extends BasicServiceImpl<TbMemBase,TsMemBase,TvM
 		//将登陆token存至缓存里: 接口存的是id
 		//
 		UserInfo userInfo = new UserInfo();
-		userInfo.setExpire(1000);//60*30 = 30分钟
+		userInfo.setExpire(System.currentTimeMillis() + 10 * 60 * 1000);//60 * 10 * 1000 = 10分钟
 		userInfo.setRoles(Collections.singletonList(String.valueOf(member.getGroupId())));
 		userInfo.setUserId(member.getId());
-		userInfo.setUsername(member.getName());
-		userInfo.setToken(ServiceEncryUtil.getMemberToken(member.getName(),memberTokenSecret));
-		memCache.setToServer(userInfo.getToken(),userInfo,userInfo.getExpire());
+		userInfo.setUserName(member.getName());
+		userInfo.setToken(ServiceEncryUtil.getMemberToken(member.getName(),memberTokenSecret+userInfo.getExpire()));
+		memCache.setToServer(userInfo.getToken(),userInfo,10 * 60);
 		return userInfo;
 	}
 }
