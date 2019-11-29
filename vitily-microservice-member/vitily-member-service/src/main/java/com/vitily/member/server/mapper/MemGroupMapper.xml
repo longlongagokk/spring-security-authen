@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vitily.member.server.mapper.MemGroupMapper" >
+  <resultMap id="BaseResultMap" type="com.vitily.member.module.entity.TbMemGroup" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="deltag" property="deltag" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="DECIMAL" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="is_default" property="isDefault" jdbcType="INTEGER" />
+    <result column="percent" property="percent" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="ListBaseResultMap" type="com.vitily.member.module.view.TvMemGroup" extends="BaseResultMap" >
+  </resultMap>
+  <resultMap id="TvResultMap" type="com.vitily.member.module.view.TvMemGroup" extends="ListBaseResultMap" >
+  </resultMap>
+  <resultMap id="OwnResourceMap" type="com.vitily.member.module.view.TvMemGroup" extends="ListBaseResultMap" >
+  </resultMap>
+  <sql id="Base_Column_List" >
+    e.`id`, e.`create_date`, e.`update_date`, e.`deltag`, e.`state`, e.`sort`, 
+    e.`name`, e.`description`, e.`is_default`, e.`percent`
+  </sql>
+  <sql id="query_condition">
+    <if test="null != entity">
+      <if test="entity.isDefault != null" >
+        and e.is_default = #{entity.isDefault,jdbcType=INTEGER}
+      </if>
+      <if test="entity.name != null" >
+        and e.name = #{entity.name,jdbcType=VARCHAR}
+      </if>
+      <include refid="com.vitily.mapper.BaseMapper.entity_query_condition" />
+    </if>
+      <!-- ts -->
+      <if test="defaultStr != null and defaultStr != ''" >
+        and e.is_default in(${defaultStr})
+      </if>
+      <if test="beginPercent != null" >
+        and e.percent >= #{beginPercent,jdbcType=DECIMAL}
+      </if>
+      <if test="endPercent != null" >
+        <![CDATA[and e.percent <= #{endPercent,jdbcType=DECIMAL}]]>
+      </if>
+      <if test="selName != null and selName != ''">
+      	and e.name like concat('%',#{selName,jdbcType=VARCHAR},'%')
+      </if>
+    <include refid="com.vitily.mapper.BaseMapper.ts_query_condition" />
+  </sql>
+  <sql id="query_exist_condition">
+  	(1=0
+      <if test="entity.name != null and entity.name != ''" >
+        or (e.name=#{entity.name,jdbcType=VARCHAR})
+      </if>
+      )
+    <if test="null !=entity and null != entity.id">
+      and e.id != #{entity.id,jdbcType=INTEGER}
+    </if>
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_mem_group e
+    where e.`id` = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insertSelective" parameterType="com.vitily.member.module.entity.TbMemGroup" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tb_mem_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="createDate != null" >
+        `create_date`,
+      </if>
+      <if test="updateDate != null" >
+        `update_date`,
+      </if>
+      <if test="deltag != null" >
+        `deltag`,
+      </if>
+      <if test="state != null" >
+        `state`,
+      </if>
+      <if test="sort != null" >
+        `sort`,
+      </if>
+      <if test="name != null" >
+        `name`,
+      </if>
+      <if test="description != null" >
+        `description`,
+      </if>
+      <if test="isDefault != null" >
+        `is_default`,
+      </if>
+      <if test="percent != null" >
+        `percent`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deltag != null" >
+        #{deltag,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefault != null" >
+        #{isDefault,jdbcType=INTEGER},
+      </if>
+      <if test="percent != null" >
+        #{percent,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vitily.member.module.entity.TbMemGroup" >
+    update tb_mem_group
+    <set >
+      <if test="createDate != null" >
+        `create_date` = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        `update_date` = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deltag != null" >
+        `deltag` = #{deltag,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        `state` = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        `sort` = #{sort,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        `description` = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefault != null" >
+        `is_default` = #{isDefault,jdbcType=INTEGER},
+      </if>
+      <if test="percent != null" >
+        `percent` = #{percent,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where `id` = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByBean" parameterType="com.vitily.member.module.search.TsMemGroup" >
+  	update tb_mem_group
+    <set >
+      <if test="null != entity">
+      <if test="entity.createDate != null" >
+        create_date = #{entity.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entity.updateDate != null" >
+        update_date = #{entity.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entity.deltag != null" >
+        deltag = #{entity.deltag,jdbcType=INTEGER},
+      </if>
+      <if test="entity.state != null" >
+        state = #{entity.state,jdbcType=INTEGER},
+      </if>
+      <if test="entity.sort != null" >
+        sort = #{entity.sort,jdbcType=DECIMAL},
+      </if>
+      <if test="entity.name != null" >
+        name = #{entity.name,jdbcType=VARCHAR},
+      </if>
+      <if test="entity.description != null" >
+        description = #{entity.description,jdbcType=VARCHAR},
+      </if>
+      <if test="entity.isDefault != null" >
+        is_default = #{entity.isDefault,jdbcType=INTEGER},
+      </if>
+      <if test="entity.percent != null" >
+        percent = #{entity.percent,jdbcType=DECIMAL},
+      </if>
+      </if>
+    </set>
+    where
+    1=1
+    <if test="ids != null and ids.size > 0">
+      and id in
+      <foreach collection="ids" item="item" open="(" close=")" separator=",">
+        #{item,jdbcType=INTEGER}
+      </foreach>
+    </if>
+   	<if test="entity.id != null and entity.id > 0">
+   		and id = #{entity.id,jdbcType=INTEGER}
+   	</if>
+   	<if test="defaultStr != null and defaultStr != ''">
+    	and is_default in (${defaultStr})
+   	</if>
+  </update>
+  <select id="selectByPrimaryKeyForTv" resultMap="TvResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_mem_group e
+    where e.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getMaxBean" parameterType="com.vitily.member.module.search.TsMemGroup" resultMap="BaseResultMap">
+    select e.* from tb_mem_group e
+    where 1=1
+    <include refid="query_condition" />
+    order by e.sort desc limit 1
+  </select>
+
+  <select id="getCountPaging" parameterType="com.vitily.member.module.search.TsMemGroup" resultType="java.lang.Integer">
+    select count(1) as recordCount from tb_mem_group e where 1=1
+    <include refid="query_condition" />
+  </select>
+  <select id="getListByBean" parameterType="com.vitily.member.module.search.TsMemGroup" resultMap="ListBaseResultMap">
+  	select e.* from tb_mem_group e where 1=1
+    <include refid="query_condition" />
+    <include refid="com.vitily.mapper.BaseMapper.page_info_condition" />
+  </select>
+  <select id="getOwnResources" resultType="com.vitily.member.module.view.TvGroupHasResources">
+    select
+    e.group_id groupId,
+    e.resources_id resourcesId,
+    mr.url_pattern urlPattern
+    from tb_group_has_resources e
+    left join tb_mem_resources mr on mr.id = e.id
+    where state = 1 and deltag = 0
+  </select>
+  <select id="isExists" parameterType="com.vitily.member.module.search.TsMemGroup" resultType="java.lang.Boolean">
+    select case when
+	exists(select 0 from tb_mem_group e where 
+	    <include refid="query_exist_condition" />
+	) then 1
+	else 0
+	end as exists_record from dual
+  </select>
+</mapper>

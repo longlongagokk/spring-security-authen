@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vitily.member.server.mapper.MemBaseMapper" >
+  <resultMap id="BaseResultMap" extends="com.vitily.mapper.BaseMapper.BaseResultMap" type="com.vitily.member.module.entity.TbMemBase" >
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="reg_from" property="regFrom" jdbcType="INTEGER" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="head_portrait" property="headPortrait" jdbcType="VARCHAR" />
+    <result column="salt" property="salt" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="token_key" property="tokenKey" jdbcType="VARCHAR" />
+    <result column="question" property="question" jdbcType="VARCHAR" />
+    <result column="answer" property="answer" jdbcType="VARCHAR" />
+    <result column="open_creditfile" property="openCreditfile" jdbcType="TINYINT" />
+    <result column="last_login_date" property="lastLoginDate" jdbcType="TIMESTAMP" />
+    <result column="recommend_member_id" property="recommendMemberId" jdbcType="INTEGER" />
+    <result column="recommend_code" property="recommendCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ListBaseResultMap" type="com.vitily.member.module.view.TvMemBase" extends="BaseResultMap" >
+  </resultMap>
+  <resultMap id="TvResultMap" type="com.vitily.member.module.view.TvMemBase" extends="ListBaseResultMap" >
+  </resultMap>
+  <sql id="Base_Column_List" >
+    <include refid="com.vitily.mapper.BaseMapper.ColumnList" />,
+    e.`name`, e.`group_id`, e.`type`, e.`nick_name`, e.`email`,
+    e.`reg_from`, e.`qq`, e.`description`, e.`head_portrait`, e.`salt`,
+    e.`password`, e.`token_key`, e.`question`, e.`answer`, e.`open_creditfile`,
+    e.`last_login_date`, e.`recommend_member_id`, e.`recommend_code`
+  </sql>
+  <sql id="query_condition">
+    <if test="null != entity">
+      <if test="entity.name != null and entity.name != ''" >
+        and e.name = #{entity.name,jdbcType=VARCHAR}
+      </if>
+      <if test="entity.nickName != null and entity.nickName != ''" >
+        and e.nick_name = #{entity.nickName,jdbcType=VARCHAR}
+      </if>
+      <if test="entity.groupId != null" >
+        and e.group_id = #{entity.groupId,jdbcType=BIGINT}
+      </if>
+      <if test="entity.id != null" >
+        and e.id = #{entity.id,jdbcType=BIGINT}
+      </if>
+      <if test="entity.type != null" >
+        and e.type = #{entity.type,jdbcType=INTEGER}
+      </if>
+      <if test="entity.openCreditfile != null" >
+        and e.open_creditfile = #{entity.openCreditfile,jdbcType=INTEGER}
+      </if>
+      <if test="entity.email != null and entity.email != ''" >
+        and e.email = #{entity.email,jdbcType=VARCHAR}
+      </if>
+      <if test="entity.regFrom != null" >
+        and e.reg_from = #{entity.regFrom,jdbcType=INTEGER}
+      </if>
+      <if test="entity.qq != null and entity.qq != ''" >
+        and e.qq = #{entity.qq,jdbcType=VARCHAR}
+      </if>
+      <if test="entity.tokenKey != null and entity.tokenKey != ''" >
+        and e.token_key = #{entity.tokenKey,jdbcType=VARCHAR}
+      </if>
+      <if test="entity.recommendMemberId != null" >
+        and e.recommend_member_id = #{entity.recommendMemberId,jdbcType=INTEGER}
+      </if>
+      <if test="entity.recommendCode != null and entity.recommendCode != ''" >
+        and e.recommend_code = #{entity.recommendCode,jdbcType=VARCHAR}
+      </if>
+      <include refid="com.vitily.mapper.BaseMapper.entity_query_condition" />
+    </if>
+
+      <!-- ts -->
+    <if test="beginLastLoginDate != null and beginLastLoginDate != ''">
+      and e.last_login_date >= #{beginLastLoginDate,jdbcType=VARCHAR}
+    </if>
+    <if test="endLastLoginDate != null and endLastLoginDate != ''">
+      <![CDATA[and e.last_login_date <= #{endLastLoginDate,jdbcType=VARCHAR}]]>
+    </if>
+    <if test="selName != null and selName != ''" >
+      and (
+      e.name like concat('%',#{selName,jdbcType=VARCHAR},'%')
+      or
+      e.nick_name like concat('%',#{selName,jdbcType=VARCHAR},'%')
+      )
+    </if>
+    <if test="email != null and email != ''" >
+      and (
+      e.email like concat('%',#{email,jdbcType=VARCHAR},'%')
+      )
+    </if>
+    <if test="qq != null and qq != ''" >
+      and (
+      e.qq like concat('%',#{qq,jdbcType=VARCHAR},'%')
+      )
+    </if>
+    <if test="groupIdStr != null and groupIdStr != ''" >
+      and e.group_id in(${groupIdStr})
+    </if>
+    <if test="typeStr != null and typeStr != ''" >
+      and e.type in(${typeStr})
+    </if>
+    <if test="regFromStr != null and regFromStr != ''" >
+      and e.reg_from in(${regFromStr})
+    </if>
+    <include refid="com.vitily.mapper.BaseMapper.ts_query_condition" />
+  </sql>
+  <sql id="query_exist_condition">
+  	  (1=0
+    <if test="null != entity">
+      <if test="entity.name != null and entity.name != ''" >
+        or e.name = #{entity.name,jdbcType=VARCHAR}
+      </if>
+      <if test="entity.nickName != null and entity.nickName != ''" >
+        or e.nick_name = #{entity.nickName,jdbcType=VARCHAR}
+      </if>
+      <if test="entity.email != null and entity.email != ''" >
+        or e.email = #{entity.email,jdbcType=VARCHAR}
+      </if>
+      <if test="entity.qq != null and entity.qq != ''" >
+        or e.qq = #{entity.qq,jdbcType=VARCHAR}
+      </if>
+    </if>
+      )
+    <if test="null !=entity and null != entity.id">
+      and e.id != #{entity.id,jdbcType=INTEGER}
+    </if>
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_mem_base e
+    where e.`id` = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insertSelective" parameterType="com.vitily.member.module.entity.TbMemBase" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tb_mem_base
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="createDate != null" >
+        `create_date`,
+      </if>
+      <if test="updateDate != null" >
+        `update_date`,
+      </if>
+      <if test="deltag != null" >
+        `deltag`,
+      </if>
+      <if test="state != null" >
+        `state`,
+      </if>
+      <if test="sort != null" >
+        `sort`,
+      </if>
+      <if test="name != null" >
+        `name`,
+      </if>
+      <if test="groupId != null" >
+        `group_id`,
+      </if>
+      <if test="type != null" >
+        `type`,
+      </if>
+      <if test="nickName != null" >
+        `nick_name`,
+      </if>
+      <if test="email != null" >
+        `email`,
+      </if>
+      <if test="regFrom != null" >
+        `reg_from`,
+      </if>
+      <if test="qq != null" >
+        `qq`,
+      </if>
+      <if test="description != null" >
+        `description`,
+      </if>
+      <if test="headPortrait != null" >
+        `head_portrait`,
+      </if>
+      <if test="salt != null" >
+        `salt`,
+      </if>
+      <if test="password != null" >
+        `password`,
+      </if>
+      <if test="tokenKey != null" >
+        `token_key`,
+      </if>
+      <if test="question != null" >
+        `question`,
+      </if>
+      <if test="answer != null" >
+        `answer`,
+      </if>
+      <if test="openCreditfile != null" >
+        `open_creditfile`,
+      </if>
+      <if test="lastLoginDate != null" >
+        `last_login_date`,
+      </if>
+      <if test="recommendMemberId != null" >
+        `recommend_member_id`,
+      </if>
+      <if test="recommendCode != null" >
+        `recommend_code`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deltag != null" >
+        #{deltag,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="nickName != null" >
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="regFrom != null" >
+        #{regFrom,jdbcType=INTEGER},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="headPortrait != null" >
+        #{headPortrait,jdbcType=VARCHAR},
+      </if>
+      <if test="salt != null" >
+        #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenKey != null" >
+        #{tokenKey,jdbcType=VARCHAR},
+      </if>
+      <if test="question != null" >
+        #{question,jdbcType=VARCHAR},
+      </if>
+      <if test="answer != null" >
+        #{answer,jdbcType=VARCHAR},
+      </if>
+      <if test="openCreditfile != null" >
+        #{open_creditfile,jdbcType=TINYINT},
+      </if>
+      <if test="lastLoginDate != null" >
+        #{lastLoginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recommendMemberId != null" >
+        #{recommendMemberId,jdbcType=INTEGER},
+      </if>
+      <if test="recommendCode != null" >
+        #{recommendCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vitily.member.module.entity.TbMemBase" >
+    update tb_mem_base
+    <set >
+      <if test="createDate != null" >
+        `create_date` = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        `update_date` = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deltag != null" >
+        `deltag` = #{deltag,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        `state` = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        `sort` = #{sort,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null" >
+        `group_id` = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        `type` = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="nickName != null" >
+        `nick_name` = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        `email` = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="regFrom != null" >
+        `reg_from` = #{regFrom,jdbcType=INTEGER},
+      </if>
+      <if test="qq != null" >
+        `qq` = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        `description` = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="headPortrait != null" >
+        `head_portrait` = #{headPortrait,jdbcType=VARCHAR},
+      </if>
+      <if test="salt != null" >
+        `salt` = #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        `password` = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenKey != null" >
+        `token_key` = #{tokenKey,jdbcType=VARCHAR},
+      </if>
+      <if test="question != null" >
+        `question` = #{question,jdbcType=VARCHAR},
+      </if>
+      <if test="answer != null" >
+        `answer` = #{answer,jdbcType=VARCHAR},
+      </if>
+      <if test="openCreditfile != null" >
+        `open_creditfile` = #{openCreditfile,jdbcType=TINYINT},
+      </if>
+      <if test="lastLoginDate != null" >
+        `last_login_date` = #{lastLoginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recommendMemberId != null" >
+        `recommend_member_id` = #{recommendMemberId,jdbcType=INTEGER},
+      </if>
+      <if test="recommendCode != null" >
+        `recommend_code` = #{recommendCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where `id` = #{id,jdbcType=INTEGER}
+  </update>
+  <sql id="select_for_tv">
+      select
+      <include refid="Base_Column_List" />
+      from tb_mem_base e
+  </sql>
+  <select id="selectByLogin" resultMap="TvResultMap" parameterType="com.vitily.member.module.req.TqMemLogin" >
+    <include refid="select_for_tv" />
+	where (e.name=#{userName} or e.email=#{userName})
+    and e.deltag = 0
+    limit 1
+   </select>
+</mapper>
