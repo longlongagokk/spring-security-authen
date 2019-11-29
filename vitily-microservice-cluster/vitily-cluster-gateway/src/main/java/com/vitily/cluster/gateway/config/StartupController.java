@@ -6,6 +6,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+/**
+ * 启动做的一些外工作
+ */
 @Component
 @Configuration
 @ComponentScan({"com.vitily.cluster.gateway.config"})

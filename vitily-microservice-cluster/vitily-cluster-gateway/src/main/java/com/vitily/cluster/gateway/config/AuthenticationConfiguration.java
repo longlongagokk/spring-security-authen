@@ -117,6 +117,11 @@ public class AuthenticationConfiguration {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userInfo.getUsername(),userInfo,grantedAuthorities);
         return authentication;
     }
+
+    /**
+     * 从请求中取到http头 权限字段，并查看是否合法
+     * @return
+     */
     @Bean
     ServerAuthenticationConverter serverAuthenticationConverter() {
         return exchange -> {
@@ -142,6 +147,11 @@ public class AuthenticationConfiguration {
         authenticationWebFilter.setAuthenticationFailureHandler(new ServerAuthenticationEntryPointFailureHandler(serverAuthenticationEntryPoint()));
         return authenticationWebFilter;
     }
+
+    /**
+     *
+     * @return
+     */
     @Bean
     ServerSecurityContextRepository serverSecurityContextRepository(){
         return new ServerSecurityContextRepository(){
@@ -166,10 +176,19 @@ public class AuthenticationConfiguration {
             }
         };
     }
+
+    /**
+     * url权限判断
+     * @return
+     */
     @Bean
     WebFilter accessWebFilter() {
         return (exchange, chain) -> {
             DelegatingReactiveAuthorizationManager.Builder builder = DelegatingReactiveAuthorizationManager.builder();
+
+
+            //将 builder对象放到内存中也许更加好。不需要每次都加载
+
             //匿名用户
             AuthorityReactiveAuthorizationManager anonymousManager = AuthorityReactiveAuthorizationManager.hasRole("ANONYMOUS");
             builder.add(new ServerWebExchangeMatcherEntry<>(ServerWebExchangeMatchers.pathMatchers("/auth/**"), anonymousManager));
@@ -188,6 +207,8 @@ public class AuthenticationConfiguration {
             }
             DelegatingReactiveAuthorizationManager manager = builder.build();
 
+
+            //在系统中所有角色对应的资源找到匹配该路径的资源，并查看该用户的角色是否匹配。
             return ReactiveSecurityContextHolder.getContext()
                     .filter(c -> c.getAuthentication() != null)
                     .map(SecurityContext::getAuthentication)
@@ -242,7 +263,10 @@ public class AuthenticationConfiguration {
                 .build();
     }
 
-
+    /**
+     * 未登录、无权限返回错误信息
+     * @return
+     */
     @Bean
     ServerAccessDeniedHandler accessDeniedHandler(){
         return (exchange, denied) -> {
@@ -258,6 +282,11 @@ public class AuthenticationConfiguration {
                     });
         };
     }
+
+    /**
+     * token无效、匿名访问时返回错误信息
+     * @return
+     */
     @Bean
     ServerAuthenticationEntryPoint serverAuthenticationEntryPoint(){
         return (exchange, e) -> Mono.defer(() -> Mono.just(exchange.getResponse()))

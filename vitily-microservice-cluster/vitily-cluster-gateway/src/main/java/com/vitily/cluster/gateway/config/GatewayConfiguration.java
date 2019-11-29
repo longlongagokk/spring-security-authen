@@ -20,7 +20,7 @@ import redis.clients.jedis.JedisPoolConfig;
 /**
  * creator : whh-lether
  * date    : 2019/6/26 18:37
- * desc    :
+ * desc    : bean注入
  **/
 @Configuration
 @EnableAsync
