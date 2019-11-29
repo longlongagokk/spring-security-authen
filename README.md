@@ -4,7 +4,7 @@
 * jdk:1.8  
 * mysql:5.7
 * redis:4.0.3(或者使用内部缓存ehcache)
-* springcloud:Greenwich.SR2  
+* springcloud:Greenwich.SR2 (springsecurity 为webflux版本，请注意，跟servlet不兼容。) 
 
 2，运行步骤
 >1，新建数据库，并将项目根目录下的user.sql执行。  
