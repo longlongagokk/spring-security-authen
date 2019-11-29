@@ -8,6 +8,7 @@ import com.vitily.common.module.Result;
 import com.vitily.common.util.CommonUtil;
 import com.vitily.common.util.JSONUtil;
 import com.vitily.common.util.ServiceEncryUtil;
+import com.vitily.common.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,7 +89,7 @@ public class AuthenticationConfiguration {
      * @param bearer
      * @return
      */
-    private AbstractAuthenticationToken getAuthentication(String bearer){
+    private AbstractAuthenticationToken getAuthentication(String bearer,ServerWebExchange exchange){
         if (StringUtils.isEmpty(bearer) || !bearer.startsWith(BEARER) || bearer.length() <= BEARER.length()){
             return getAnonymousToken();
         }
@@ -101,12 +102,14 @@ public class AuthenticationConfiguration {
         final Long expires = Long.valueOf(_split[2]);
         if(expires <= System.currentTimeMillis()){
             log.warn("token 已过期");
+            exchange.getAttributes().put("errorMessages","token 已过期");
             return null;
         }
         //验证token 的合法性（username+secretKey+expire）
         if(!CommonUtil.isEqual(authToken, ServiceEncryUtil.getMemberToken(username,memberTokenSecret+expires))){
             //throw new CustomerException("请不要修改token", CommonEnumContainer.ResultStatus.Token无效);
             log.warn("请不要修改token");
+            exchange.getAttributes().put("errorMessages","请不要修改token");
             return null;
         }
         CommonServiceCache memCache=commonServiceCache.getInstance(DictionaryKey.Keys.会员Token);
@@ -131,7 +134,7 @@ public class AuthenticationConfiguration {
     ServerAuthenticationConverter serverAuthenticationConverter() {
         return exchange -> {
             String token = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-            return Mono.justOrEmpty(getAuthentication(token));
+            return Mono.justOrEmpty(getAuthentication(token,exchange));
         };
     }
     @Bean
@@ -176,7 +179,7 @@ public class AuthenticationConfiguration {
                 }
                 //是否只保证一个token有效
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                securityContext.setAuthentication(getAuthentication(token));
+                securityContext.setAuthentication(getAuthentication(token,exchange));
                 return Mono.just(securityContext);
             }
         };
@@ -280,7 +283,12 @@ public class AuthenticationConfiguration {
                         response.setStatusCode(HttpStatus.FORBIDDEN);
                         response.getHeaders().setContentType(MediaType.APPLICATION_JSON_UTF8);
                         DataBufferFactory dataBufferFactory = response.bufferFactory();
-                        DataBuffer buffer = dataBufferFactory.wrap(JSONUtil.toJSONString(Result.error(CommonEnumContainer.ResultStatus.无权限)).getBytes(
+                        CommonEnumContainer.ResultStatus status = CommonEnumContainer.ResultStatus.无权限;
+                        String msg = exchange.getAttribute("errorMessages");
+                        if (StringUtil.isEmpty(msg)) {
+                            msg = status.getDesc();
+                        }
+                        DataBuffer buffer = dataBufferFactory.wrap(JSONUtil.toJSONString(Result.error(status,msg)).getBytes(
                                 Charset.defaultCharset()));
                         return response.writeWith(Mono.just(buffer))
                                 .doOnError( error -> DataBufferUtils.release(buffer));
@@ -299,7 +307,12 @@ public class AuthenticationConfiguration {
                     response.setStatusCode(HttpStatus.UNAUTHORIZED);
                     response.getHeaders().setContentType(MediaType.APPLICATION_JSON_UTF8);
                     DataBufferFactory dataBufferFactory = response.bufferFactory();
-                    DataBuffer buffer = dataBufferFactory.wrap(JSONUtil.toJSONString(Result.error(CommonEnumContainer.ResultStatus.Token无效)).getBytes(
+                    CommonEnumContainer.ResultStatus status = CommonEnumContainer.ResultStatus.Token无效;
+                    String msg = exchange.getAttribute("errorMessages");
+                    if (StringUtil.isEmpty(msg)) {
+                        msg = status.getDesc();
+                    }
+                    DataBuffer buffer = dataBufferFactory.wrap(JSONUtil.toJSONString(Result.error(status,msg)).getBytes(
                             Charset.defaultCharset()));
                     return response.writeWith(Mono.just(buffer))
                             .doOnError( error -> DataBufferUtils.release(buffer));
